@@ -8,7 +8,7 @@ defmodule Air.Worker do
   @impl true
   def init(state) do
     {:ok, pid} = Circuits.UART.start_link()
-    Circuits.UART.open(pid, "/dev/serial0", speed: 9600, active: true)
+    Circuits.UART.open(pid, "/dev/serial0", speed: 9600, active: true, framing: Air.Circuits.Framing)
 
     {:ok, state}
   end
