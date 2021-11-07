@@ -15,10 +15,25 @@ defmodule Air.Worker do
 
   @impl true
   def handle_info({:circuits_uart, _, msg}, state) do
-    timestamp = DateTime.to_string(DateTime.utc_now())
-    msg = Base.encode16(msg)
-    File.write!("data.txt", "#{timestamp} #{msg}\n", [:append])
+    File.write!("data.csv", csv_line(msg), [:append])
 
     {:noreply, state}
   end
+
+  defp csv_line(msg) do
+    timestamp = DateTime.utc_now() |> DateTime.to_string()
+    "#{timestamp},#{Base.encode16(msg)},#{pm(msg)}\r\n"
+  end
+
+  defp pm(<<170, 192, pm25::binary-size(2), pm10::binary-size(2), _::binary-size(3), 171>>) do
+    [pm25, pm10]
+    |> Enum.map(fn bin ->
+      :binary.decode_unsigned(bin, :little)
+      |> Kernel./(10)
+      |> Float.to_string
+    end)
+    |> Enum.join(",")
+  end
+
+  defp pm(_), do: ","
 end
