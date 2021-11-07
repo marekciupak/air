@@ -5,9 +5,14 @@ defmodule Air.MixProject do
     [
       app: :air,
       version: "0.1.0",
-      elixir: "~> 1.7",
+      elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      releases: [
+        air: [
+          steps: [:assemble, :tar]
+        ]
+      ]
     ]
   end
 
