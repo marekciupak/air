@@ -7,7 +7,7 @@ defmodule Air.Worker do
 
   @impl true
   def init(state) do
-    Circuits.UART.open(:uart, "/dev/serial0", speed: 9600, active: true, framing: Air.Circuits.Framing)
+    :ok = Circuits.UART.open(:uart, "/dev/serial0", speed: 9600, active: true, framing: Air.Circuits.Framing)
 
     {:ok, state}
   end
