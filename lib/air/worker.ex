@@ -14,7 +14,7 @@ defmodule Air.Worker do
 
   @impl true
   def handle_info({:circuits_uart, _, msg}, state) do
-    File.write!("data.csv", csv_line(msg), [:append])
+    File.write!("data/measurements.csv", csv_line(msg), [:append])
 
     {:noreply, state}
   end

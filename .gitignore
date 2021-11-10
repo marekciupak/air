@@ -25,4 +25,5 @@ air-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 
-/data.csv
+/data/*
+!/data/.keep
