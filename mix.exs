@@ -27,7 +27,8 @@ defmodule Air.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:circuits_uart, "~> 1.4"}
+      {:circuits_uart, "~> 1.4"},
+      {:circuits_i2c, "~> 1.0"}
     ]
   end
 end
