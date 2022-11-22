@@ -10,7 +10,8 @@ defmodule Air.Application do
     children = [
       {Circuits.UART, name: :uart},
       Air.Worker,
-      Air.TempHum
+      Air.TempHum,
+      Air.Airly
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

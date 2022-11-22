@@ -28,7 +28,9 @@ defmodule Air.MixProject do
   defp deps do
     [
       {:circuits_uart, "~> 1.4"},
-      {:circuits_i2c, "~> 1.0"}
+      {:circuits_i2c, "~> 1.0"},
+      {:httpoison, "~> 1.8"},
+      {:jason, "~> 1.4"}
     ]
   end
 end
