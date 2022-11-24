@@ -42,7 +42,9 @@ defmodule Air.Airly do
         measurement |> Map.fetch!(:values) |> Map.fetch!(:pm10),
         measurement |> Map.fetch!(:values) |> Map.fetch!(:pressure),
         measurement |> Map.fetch!(:values) |> Map.fetch!(:humidity),
-        measurement |> Map.fetch!(:values) |> Map.fetch!(:temperature)
+        measurement |> Map.fetch!(:values) |> Map.fetch!(:temperature),
+        measurement |> Map.fetch!(:values) |> Map.fetch!(:wind_speed),
+        measurement |> Map.fetch!(:values) |> Map.fetch!(:wind_bearing)
       ]
       |> Enum.join(",")
 

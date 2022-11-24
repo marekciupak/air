@@ -12,7 +12,8 @@ defmodule Airly do
       query:
         URI.encode_query(%{
           "lat" => lat,
-          "lng" => lng
+          "lng" => lng,
+          "includeWind" => true
         }),
       fragment: nil
     }
