@@ -27,3 +27,5 @@ air-*.tar
 
 /data/*
 !/data/.keep
+
+/.elixir_ls/

@@ -5,7 +5,7 @@ defmodule Air.MixProject do
     [
       app: :air,
       version: "0.1.0",
-      elixir: "~> 1.12",
+      elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       releases: [
@@ -27,10 +27,10 @@ defmodule Air.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:circuits_uart, "~> 1.4"},
+      {:circuits_uart, "~> 1.0"},
       {:circuits_i2c, "~> 1.0"},
-      {:httpoison, "~> 1.8"},
-      {:jason, "~> 1.4"}
+      {:httpoison, "~> 2.0"},
+      {:jason, "~> 1.0"}
     ]
   end
 end
