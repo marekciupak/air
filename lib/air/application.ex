@@ -11,7 +11,8 @@ defmodule Air.Application do
       {Circuits.UART, name: :uart},
       Air.Worker,
       Air.TempHum,
-      Air.Airly
+      Air.Airly,
+      Air.Db.Connection
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

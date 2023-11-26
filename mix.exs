@@ -30,7 +30,8 @@ defmodule Air.MixProject do
       {:circuits_uart, "~> 1.0"},
       {:circuits_i2c, "~> 2.0"},
       {:httpoison, "~> 2.0"},
-      {:jason, "~> 1.0"}
+      {:jason, "~> 1.0"},
+      {:instream, "~> 2.0"}
     ]
   end
 end

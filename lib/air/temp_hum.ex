@@ -2,6 +2,7 @@ defmodule Air.TempHum do
   use GenServer
 
   alias Circuits.I2C
+  alias Air.Db.Series, as: DbSeries
 
   @factor Float.pow(2.0, -20)
 
@@ -70,10 +71,24 @@ defmodule Air.TempHum do
   end
 
   defp process_measurement(hum, temp) when is_float(hum) and is_float(temp) do
-    File.write!("data/temp_hum.csv", "#{timestamp()},#{hum},#{temp}\r\n", [:append])
+    timestamp = DateTime.utc_now()
+
+    write_to_file(timestamp, hum, temp)
+    write_to_db(timestamp, hum, temp)
   end
 
-  defp timestamp do
-    DateTime.utc_now() |> DateTime.to_string()
+  def write_to_file(timestamp, hum, temp) do
+    File.write!("data/temp_hum.csv", "#{DateTime.to_string(timestamp)},#{hum},#{temp}\r\n", [:append])
+  end
+
+  def write_to_db(timestamp, hum, temp) do
+    :ok =
+      Air.Db.Connection.write(%DbSeries.Climate{
+        fields: %DbSeries.Climate.Fields{
+          temperature: Float.round(temp, 2),
+          humidity: Float.round(hum, 2)
+        },
+        timestamp: DateTime.to_unix(timestamp, :nanosecond)
+      })
   end
 end
