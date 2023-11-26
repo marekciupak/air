@@ -15,13 +15,14 @@ defmodule Air.TempHum do
       {:ok, ref} ->
         schedule_measurement()
         {:ok, ref}
+
       {:error, _} ->
         {:ok, nil}
     end
   end
 
   @impl true
-  def handle_info(:measure, ref) when is_reference(ref) do
+  def handle_info(:measure, ref) do
     case trigger_measurement(ref) do
       :ok -> schedule_reading()
       {:error, _error} -> nil
@@ -33,7 +34,7 @@ defmodule Air.TempHum do
   end
 
   @impl true
-  def handle_info(:read, ref) when is_reference(ref) do
+  def handle_info(:read, ref) do
     case read_measurement(ref) do
       {:ok, data} -> process_data(data)
       {:error, _error} -> nil
@@ -65,7 +66,7 @@ defmodule Air.TempHum do
   defp process_data(_), do: nil
 
   defp process_measurement(<<hum::size(20), temp::size(20)>>) do
-    process_measurement(hum * @factor * 100, (temp * @factor * 200) - 50)
+    process_measurement(hum * @factor * 100, temp * @factor * 200 - 50)
   end
 
   defp process_measurement(hum, temp) when is_float(hum) and is_float(temp) do
