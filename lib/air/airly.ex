@@ -33,21 +33,30 @@ defmodule Air.Airly do
   end
 
   defp process_measurement(measurement) do
+    from_date_time = Map.fetch!(measurement, :from_date_time)
+    till_date_time = Map.fetch!(measurement, :till_date_time)
+    data = Map.fetch!(measurement, :values)
+
+    write_to_file(from_date_time, till_date_time, data)
+  end
+
+  defp write_to_file(from_date_time, till_date_time, data) do
+    from_date_time = DateTime.to_string(from_date_time)
+    till_date_time = DateTime.to_string(till_date_time)
+
     data =
       [
-        measurement |> Map.fetch!(:from_date_time) |> DateTime.to_string(),
-        measurement |> Map.fetch!(:till_date_time) |> DateTime.to_string(),
-        measurement |> Map.fetch!(:values) |> Map.fetch!(:pm1),
-        measurement |> Map.fetch!(:values) |> Map.fetch!(:pm25),
-        measurement |> Map.fetch!(:values) |> Map.fetch!(:pm10),
-        measurement |> Map.fetch!(:values) |> Map.fetch!(:pressure),
-        measurement |> Map.fetch!(:values) |> Map.fetch!(:humidity),
-        measurement |> Map.fetch!(:values) |> Map.fetch!(:temperature),
-        measurement |> Map.fetch!(:values) |> Map.fetch!(:wind_speed),
-        measurement |> Map.fetch!(:values) |> Map.fetch!(:wind_bearing)
+        Map.fetch!(data, :pm1),
+        Map.fetch!(data, :pm25),
+        Map.fetch!(data, :pm10),
+        Map.fetch!(data, :pressure),
+        Map.fetch!(data, :humidity),
+        Map.fetch!(data, :temperature),
+        Map.fetch!(data, :wind_speed),
+        Map.fetch!(data, :wind_bearing)
       ]
       |> Enum.join(",")
 
-    File.write!("data/airly.csv", "#{data}\r\n", [:append])
+    File.write!("data/airly.csv", "#{from_date_time},#{till_date_time},#{data}\r\n", [:append])
   end
 end
