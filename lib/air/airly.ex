@@ -1,6 +1,8 @@
 defmodule Air.Airly do
   use GenServer
 
+  alias Air.Db.Series, as: DbSeries
+
   def start_link(_) do
     GenServer.start_link(__MODULE__, %{})
   end
@@ -38,6 +40,7 @@ defmodule Air.Airly do
     data = Map.fetch!(measurement, :values)
 
     write_to_file(from_date_time, till_date_time, data)
+    write_to_db(from_date_time, till_date_time, data)
   end
 
   defp write_to_file(from_date_time, till_date_time, data) do
@@ -58,5 +61,27 @@ defmodule Air.Airly do
       |> Enum.join(",")
 
     File.write!("data/airly.csv", "#{from_date_time},#{till_date_time},#{data}\r\n", [:append])
+  end
+
+  def write_to_db(from_date_time, till_date_time, data) do
+    period = DateTime.diff(till_date_time, from_date_time)
+    timestamp = DateTime.add(from_date_time, trunc(period / 2), :second)
+
+    :ok =
+      Air.Db.Connection.write(%DbSeries.Weather{
+        fields: %DbSeries.Weather.Fields{
+          from_date_time: DateTime.to_unix(from_date_time, :nanosecond),
+          till_date_time: DateTime.to_unix(till_date_time, :nanosecond),
+          pm1: Map.fetch!(data, :pm1),
+          pm25: Map.fetch!(data, :pm25),
+          pm10: Map.fetch!(data, :pm10),
+          pressure: Map.fetch!(data, :pressure),
+          humidity: Map.fetch!(data, :humidity),
+          temperature: Map.fetch!(data, :temperature),
+          wind_speed: Map.fetch!(data, :wind_speed),
+          wind_bearing: Map.fetch!(data, :wind_bearing)
+        },
+        timestamp: DateTime.to_unix(timestamp, :nanosecond)
+      })
   end
 end
