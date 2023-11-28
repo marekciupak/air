@@ -1,6 +1,8 @@
 defmodule Air.Worker do
   use GenServer
 
+  alias Air.Db.Series, as: DbSeries
+
   def start_link(init_arg) do
     GenServer.start_link(__MODULE__, init_arg)
   end
@@ -18,6 +20,7 @@ defmodule Air.Worker do
     [pm25, pm10] = pm(msg)
 
     write_to_file(timestamp, msg, pm25, pm10)
+    write_to_db(timestamp, pm25, pm10)
 
     {:noreply, state}
   end
@@ -27,17 +30,29 @@ defmodule Air.Worker do
     |> Enum.map(fn bin ->
       :binary.decode_unsigned(bin, :little)
       |> Kernel./(10)
-      |> Float.to_string()
     end)
   end
 
   defp pm(_), do: [nil, nil]
 
   defp write_to_file(timestamp, msg, pm25, pm10) do
+    pm25 = Float.to_string(pm25)
+    pm10 = Float.to_string(pm10)
     File.write!("data/measurements.csv", csv_line(timestamp, msg, pm25, pm10), [:append])
   end
 
   defp csv_line(timestamp, msg, pm25, pm10) do
     "#{DateTime.to_string(timestamp)},#{Base.encode16(msg)},#{pm25},#{pm10}\r\n"
+  end
+
+  def write_to_db(timestamp, pm25, pm10) do
+    :ok =
+      Air.Db.Connection.write(%DbSeries.Pollution{
+        fields: %DbSeries.Pollution.Fields{
+          pm25: pm25,
+          pm10: pm10
+        },
+        timestamp: DateTime.to_unix(timestamp, :nanosecond)
+      })
   end
 end
