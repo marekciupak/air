@@ -14,14 +14,12 @@ defmodule Air.Worker do
 
   @impl true
   def handle_info({:circuits_uart, _, msg}, state) do
-    File.write!("data/measurements.csv", csv_line(msg), [:append])
+    timestamp = DateTime.utc_now()
+    [pm25, pm10] = pm(msg)
+
+    write_to_file(timestamp, msg, pm25, pm10)
 
     {:noreply, state}
-  end
-
-  defp csv_line(msg) do
-    timestamp = DateTime.utc_now() |> DateTime.to_string()
-    "#{timestamp},#{Base.encode16(msg)},#{pm(msg)}\r\n"
   end
 
   defp pm(<<170, 192, pm25::binary-size(2), pm10::binary-size(2), _::binary-size(3), 171>>) do
@@ -29,10 +27,17 @@ defmodule Air.Worker do
     |> Enum.map(fn bin ->
       :binary.decode_unsigned(bin, :little)
       |> Kernel./(10)
-      |> Float.to_string
+      |> Float.to_string()
     end)
-    |> Enum.join(",")
   end
 
-  defp pm(_), do: ","
+  defp pm(_), do: [nil, nil]
+
+  defp write_to_file(timestamp, msg, pm25, pm10) do
+    File.write!("data/measurements.csv", csv_line(timestamp, msg, pm25, pm10), [:append])
+  end
+
+  defp csv_line(timestamp, msg, pm25, pm10) do
+    "#{DateTime.to_string(timestamp)},#{Base.encode16(msg)},#{pm25},#{pm10}\r\n"
+  end
 end
